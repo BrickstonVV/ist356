@@ -1,0 +1,18 @@
+The idea that tied all three apps together was that a 
+Streamlit script reruns top to bottom on every interaction. 
+In Part 1 that's why the guard matters: st.text_input 
+returns an empty string on the first rerun, so if 
+package_data: stops it from parsing nothing. Part 2 
+was the same guard around a different widget 
+st.file_uploader returns None until a file is chosen 
+plus the new mechanical step that an upload is bytes, 
+so it has to be decoded before splitting into lines 
+(and the trailing newline makes the last line blank, 
+so it's skipped). Part 3 was the real jump. Because of 
+the rerun, an ordinary files_processed = 0 resets every 
+time, so the totals have to live in session state and be 
+initialised once. The two traps clicked for me here: the 
+uploader stays populated across reruns, so processing is 
+button-triggered instead (the button is True only on the 
+click's rerun), and the metrics display from state rather
+than recomputing.
